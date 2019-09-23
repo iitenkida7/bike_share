@@ -1,0 +1,9 @@
+{
+    "require": {
+        "nesbot/carbon": "^2.24",
+        "illuminate/support": "^6.0",
+        "vlucas/phpdotenv": "^3.6",
+        "guzzlehttp/guzzle": "^6.3",
+        "fabpot/goutte": "^3.2"
+    }
+}
