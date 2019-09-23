@@ -5,7 +5,6 @@ use Illuminate\Support\Arr;
 use Dotenv\Dotenv;
 use Goutte\Client;
 
-
 class ReserveBike
 {
 

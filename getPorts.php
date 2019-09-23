@@ -48,6 +48,3 @@ class GetPorts
         return $portsStatus;
     }
 }
-
-// debug
- // print_r((new GetPorts)->status());
