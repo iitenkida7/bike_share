@@ -102,10 +102,11 @@ class ReserveBike
             'ParkingID' => $port['portId'],
             //    'ParkingLat' => '35.691456',
             //    'ParkingLon'=> '139.762228'
-        ]
-    );
-
-        return  $port->filter('.sp_view form')->each(function($element){
+        ]);
+        if ( $port->filter('.sp_view form')->count() == 0) {
+            return [];
+        }
+        return $port->filter('.sp_view form')->each(function ($element) {
             $bike = [
                 'BikeName'=> $element->filter('a')->text(), 
                 'postData' => [
