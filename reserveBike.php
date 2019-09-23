@@ -31,30 +31,30 @@ class ReserveBike
     public function reserveNearbyBike($ports) :array
     {
         // 既に予約があったら終了
-        if ($this->reserved != []){
+        if ($this->reserved != []) {
             return $this->reserved;
         }
 
         $faildCnt = 0;
-        foreach ($ports as $port){
+        foreach ($ports as $port) {
             // 自転車があるポート以外はスキップ
-            if($port['stockNum'] <= 0 ){
+            if ($port['stockNum'] <= 0) {
                 continue;
             }
             $portBikes = $this->portBikes($port);
             // 再度ポートの自転車ストック状況を確認してない場合はスキップ
-            if(count($portBikes) <= 0 ){
+            if (count($portBikes) <= 0) {
                 continue;
             }
 
             // 予約を試みる
-            foreach ($portBikes as $portBike){
+            foreach ($portBikes as $portBike) {
                 usleep(500000);
                 // 3回トライしてだめだったら諦める
-                if ($faildCnt >= 3){
+                if ($faildCnt >= 3) {
                     return [ 'reserve' => false , 'bikeInfo' => null ];
                 }
-                if($this->reserveBike($portBike)){
+                if ($this->reserveBike($portBike)) {
                     return [
                         'reserve' => true,
                         'bikeInfo' => [
@@ -62,7 +62,7 @@ class ReserveBike
                             'BikeName' => $portBike['BikeName'],
                         ]
                     ];
-                }else{
+                } else {
                     $faildCnt ++ ;
                 }
             }
@@ -79,13 +79,13 @@ class ReserveBike
         ]);
         usleep(500000); // ちょっと待たないとうまく進めなかった
 
-        if( ($login->filter('.mpt_inner_left p')->count() > 0)){
+        if ($login->filter('.mpt_inner_left p')->count() > 0) {
             // TODO bikeInfo にちゃんと情報入れる
             $this->reserved =  [ 'reserve' => true  , 'bikeInfo' => null , 'msg' => 'you havbe already reserved' ];
         }
         $this->sessionId = current($login->filter('form > input[name="SessionID"]')->first()->extract('value'));
-        if( !$this->sessionId == "" ){
-            return false; 
+        if (!$this->sessionId == "") {
+            return false;
         }
     }
 
@@ -108,7 +108,7 @@ class ReserveBike
         }
         return $port->filter('.sp_view form')->each(function ($element) {
             $bike = [
-                'BikeName'=> $element->filter('a')->text(), 
+                'BikeName'=> $element->filter('a')->text(),
                 'postData' => [
                     'EventNo' => $element->filter('input[name=EventNo]')->attr('value'),
                         'SessionID' => $element->filter('input[name=SessionID]')->attr('value'),

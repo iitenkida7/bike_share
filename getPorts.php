@@ -26,11 +26,11 @@ class GetPorts
 
     public function status($ports = []) :array
     {
-        if($ports === []) {
+        if ($ports === []) {
             $ports = $this->ports;
         }
         $portsStatus = [];
-        foreach ($ports as $portId => $portName){
+        foreach ($ports as $portId => $portName) {
             $stockCheck = (new Client())
                 ->setHeader('Content-Type', 'application/xml; charset=utf-8')
                 ->setHeader('User-Agent', '35_docomo_bikeshare/1.6.3.1 CFNetwork/978.0.7 Darwin/18.7.0')
@@ -40,7 +40,7 @@ class GetPorts
             $portsStatus[] = [
                 'portId'   => $portId,
                 'portName' => $portName,
-                'stockNum' => $stockCheck->filter('total_num')->html(),    
+                'stockNum' => $stockCheck->filter('total_num')->html(),
             ];
 
             usleep(100000);
