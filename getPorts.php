@@ -8,16 +8,6 @@ class GetPorts
 {
     private $stockCheckUrl = 'https://tcc.docomo-cycle.jp/cgi-bin/csapi/csapiV1';
 
-    public $ports = [
-        '00010302' => 'ヨドバシカメラ前',
-        '00010303' => '電気街口（西側交通広場）',
-        '00010032' => 'UDX駐輪場前',
-        '00010037' => '富士ソフト',
-        '00010016' => '秋葉原公園',
-        '00010468' => '高架下ドコモ',
-        '00010467' => '高架下マーチエキュート',
-    ];
-
 
     private function createPostXml($portId) :string
     {
@@ -27,7 +17,7 @@ class GetPorts
     public function status($ports = []) :array
     {
         if ($ports === []) {
-            $ports = $this->ports;
+            return [];
         }
         $portsStatus = [];
         foreach ($ports as $portId => $portName) {
