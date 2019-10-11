@@ -80,8 +80,13 @@ class ReserveBike
         usleep(500000); // ちょっと待たないとうまく進めなかった
 
         if ($login->filter('.mpt_inner_left p')->count() > 0) {
-            // TODO bikeInfo にちゃんと情報入れる
-            $this->reserved =  [ 'reserve' => true  , 'bikeInfo' => null , 'msg' => 'you havbe already reserved' ];
+            $this->reserved =  [ 'reserve' => true,
+                'bikeInfo' => [
+                    'portName' => null, //ポート情報の記載が無いためわからず。。 何かAPI叩く必要がありそう。
+                    'BikeName' => explode(':', explode("\n", $login->filter('.usr_stat')->text())[1])[1],
+                    'PassCode' => explode(':', explode("\n", $login->filter('.usr_stat')->text())[2])[1],
+                ] ,
+                'msg' => 'you havbe already reserved' ];
         }
         $this->sessionId = current($login->filter('form > input[name="SessionID"]')->first()->extract('value'));
         if (!$this->sessionId == "") {
