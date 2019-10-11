@@ -96,7 +96,7 @@ class ReserveBike
 
     private function portBikes($port) :array
     {
-        $port = $this->client->request('POST', $this->endpoint, [
+        $portInfo = $this->client->request('POST', $this->endpoint, [
             'EventNo' => 25701, //バイク一覧
             'SessionID'=> $this->sessionId,
             'UserID'    => 'TYO',
@@ -108,10 +108,10 @@ class ReserveBike
             //    'ParkingLat' => '35.691456',
             //    'ParkingLon'=> '139.762228'
         ]);
-        if ( $port->filter('.sp_view form')->count() == 0) {
+        if ( $portInfo->filter('.sp_view form')->count() == 0) {
             return [];
         }
-        return $port->filter('.sp_view form')->each(function ($element) {
+        return $portInfo->filter('.sp_view form')->each(function ($element) {
             $bike = [
                 'BikeName'=> $element->filter('a')->text(),
                 'postData' => [
