@@ -1,0 +1,24 @@
+version: '2'
+services:
+  https-portal:
+    image: steveltn/https-portal:1
+    ports:
+      - 80:80
+      - 443:443
+    links:
+      - php
+    restart: always
+    environment:
+      DOMAINS: 'lemon.misato-taxi.jp -> http://php'
+      STAGE: production
+     # Using staging server by default, for there is a rate limit on production.
+     # Uncomment to use Let's Encrypt production server.
+     # STAGE: production
+
+  php:
+    image: php
+    volumes:
+      - .:/usr/src/myapp
+    working_dir: /usr/src/myapp 
+    entrypoint: "/bin/sh -c 'php -S 0.0.0.0:80'" 
+
