@@ -19,6 +19,6 @@ services:
     image: php
     volumes:
       - .:/usr/src/myapp
-    working_dir: /usr/src/myapp 
+    working_dir: /usr/src/myapp/public 
     entrypoint: "/bin/sh -c 'php -S 0.0.0.0:80'" 
 
