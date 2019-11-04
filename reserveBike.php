@@ -58,6 +58,7 @@ class ReserveBike
                     return [
                         'reserve' => true,
                         'bikeInfo' => [
+                            'portCode' => $port['portId'],
                             'portName' => $port['portName'],
                             'BikeName' => $portBike['BikeName'],
                         ]
