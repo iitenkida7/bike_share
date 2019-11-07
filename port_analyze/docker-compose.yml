@@ -30,13 +30,13 @@ services:
     links:
       - mysql
     ports:
-       - 8080:80
+       - 127.0.0.1:8080:80
     links:
       - db
 
   grafana:
     image: grafana/grafana
     ports:
-      - 3000:3000
+      - 127.0.0.1:3000:3000
     links:
       - db
