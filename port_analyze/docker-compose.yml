@@ -27,8 +27,6 @@ services:
       - PMA_HOST=db
       - PMA_USER=root
       - PMA_PASSWORD=root123
-    links:
-      - mysql
     ports:
        - 127.0.0.1:8080:80
     links:
