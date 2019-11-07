@@ -1,0 +1,42 @@
+version: '2'
+services:
+  php:
+    build: docker/php
+    volumes:
+      - ./../:/usr/src/myapp
+    working_dir: /usr/src/myapp
+    entrypoint: port_analyze/run.sh
+    links:
+      - db
+
+  db:
+    image: mysql:5.7
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql:cached
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: chiyokuru
+      TZ: "Asia/Tokyo"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=root123
+    links:
+      - mysql
+    ports:
+       - 8080:80
+    links:
+      - db
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    links:
+      - db

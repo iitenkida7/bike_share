@@ -2,7 +2,9 @@
     "require": {
         "vlucas/phpdotenv": "^3.6",
         "fabpot/goutte": "^3.2",
-        "linecorp/line-bot-sdk": "^3.15"
+        "linecorp/line-bot-sdk": "^3.15",
+        "illuminate/database": "^6.5",
+        "nesbot/carbon": "^2.26"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.4"
