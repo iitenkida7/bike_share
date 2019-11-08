@@ -45,6 +45,19 @@ class reserveManager
         $this->pushLocation($event['source']['userId'],$this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']));
     }
 
+
+    public function specifiedReserve($ports)
+    {
+            $this->status = (new GetPorts)->status($ports);
+
+            // 予約処理
+            $this->reserveBike = (new ReserveBike)->reserveNearbyBike($this->status);
+            file_put_contents('php://stdout', print_r($this->reserveBike,true));
+
+            // Line送信
+            $this->pushMessage(getenv('LINE_USER_ID'),$this->buildMessage());
+    }
+
     private function buildMessage() :string
     {
         $msg="";
@@ -73,6 +86,16 @@ class reserveManager
         return false;
     }
 
+    private function pushMessage($lineUserId,$msg) :bool
+    {
+        $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($msg);
+        $response = $this->bot->pushMessage($lineUserId, $textMessageBuilder);
+        file_put_contents('php://stdout', $response->getHTTPStatus() . ' ' . $response->getRawBody());
+        if ($response->getHTTPStatus() == 200){
+            return true;
+        }
+        return false;
+    }
     private function pushLocation($userId,$port) :bool
     {
         $locationMessageBuilder = new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder($port['name'], $port['name'], $port['lat'], $port['lng']);
