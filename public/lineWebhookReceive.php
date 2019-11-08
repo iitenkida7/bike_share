@@ -10,6 +10,7 @@ $dotenv->load();
 
 $requestHeaders = getallheaders();
 $requestBody = file_get_contents('php://input');
+file_put_contents('php://stdout', $requestBody);
 $event = json_decode($requestBody, true)['events'][0];
 
 // リクエスト検証
