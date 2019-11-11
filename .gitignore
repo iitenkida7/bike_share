@@ -2,3 +2,5 @@
 vendor
 composer.lock
 port_analyze/docker/mysql/data
+docker/mysql/data
+*.env
