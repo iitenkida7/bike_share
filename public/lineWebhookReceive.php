@@ -25,10 +25,13 @@ if(empty($event['message']['type'])){
     header( "HTTP/1.1 415 Unsupported Media Type" ) ;
     exit;
 }
+
 // メッセージタイプは位置情か
-if ( $event['message']['type'] !== 'location'){
-    header( "HTTP/1.1 415 Unsupported Media Type" ) ;
-    exit;
+if ( $event['message']['type'] == 'location'){
+    (new reserveManager())->lineReceiver($event);
 }
 
-(new reserveManager())->lineReceiver($event);
+// メッセージタイプはtextか
+if ( $event['message']['type'] == 'text'){
+    (new reserveManager())->lineMessageDispatcher($event);
+}

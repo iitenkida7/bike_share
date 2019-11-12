@@ -45,6 +45,16 @@ class reserveManager
         $this->pushLocation($event['source']['userId'],$this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']));
     }
 
+    public function lineMessageDispatcher($event)
+    {
+        if(preg_match('/cancel/', $event['message']['text'])){
+            if((new ReserveBike)->reserveCancel()){
+                $this->replyMessage($event['replyToken'],"自転車の予約をキャンセルしました");
+            }
+        }else{
+                $this->replyMessage($event['replyToken'],"位置情報をくれれば自転車予約するよ。cancel したい場合は、cancel と入力してね。");
+        }
+    }
 
     public function specifiedReserve($ports)
     {
