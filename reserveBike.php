@@ -95,6 +95,20 @@ class ReserveBike
         }
     }
 
+    public function reserveCancel(): bool
+    {
+        $cancel = $this->client->request('POST', $this->endpoint, [
+            'EventNo' => 27901, //キャンセル
+            'SessionID'=> $this->sessionId,
+            'UserID'    => 'TYO',
+            'MemberID' => $this->memberId,
+        ]);
+        if ($cancel->filter('.mpt_inner_left p')->count() == 0) {
+            return true;
+        }
+        return false;
+    }
+
     private function portBikes($port) :array
     {
         $portInfo = $this->client->request('POST', $this->endpoint, [
