@@ -16,8 +16,8 @@ services:
     build: docker/php
     volumes:
       - .:/usr/src/myapp
-    working_dir: /usr/src/myapp/public 
-    entrypoint: "/bin/sh -c 'php -S 0.0.0.0:80'" 
+    working_dir: /usr/src/myapp/laravel 
+    entrypoint: "php artisan serve --port=80 --host=0.0.0.0" 
 
   db:
     image: mysql:5.7
