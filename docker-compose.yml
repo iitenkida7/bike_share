@@ -9,15 +9,53 @@ services:
       - php
     restart: always
     environment:
-      DOMAINS: 'lemon.misato-taxi.jp -> http://php'
-      STAGE: production
-     # Using staging server by default, for there is a rate limit on production.
-     # Uncomment to use Let's Encrypt production server.
-     # STAGE: production
+      - DOMAINS=lemon.misato-taxi.jp -> http://php
+      - STAGE
 
   php:
-    image: php
+    build: docker/php
     volumes:
       - .:/usr/src/myapp
     working_dir: /usr/src/myapp/public 
     entrypoint: "/bin/sh -c 'php -S 0.0.0.0:80'" 
+
+  db:
+    image: mysql:5.7
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql:cached
+    environment:
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE
+      - TZ="Asia/Tokyo"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    ports:
+       - 127.0.0.1:8080:80
+    links:
+      - db
+
+
+#  Analyze用:一旦つかわない
+#  php:
+#    build: docker/php
+#    volumes:
+#      - ./../:/usr/src/myapp
+#    working_dir: /usr/src/myapp
+#    entrypoint: port_analyze/run.sh
+#    links:
+#      - db
+#
+#  grafana:
+#    image: grafana/grafana
+#    ports:
+#      - 127.0.0.1:3000:3000
+#    links:
+#      - db
