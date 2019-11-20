@@ -1,10 +1,10 @@
 <?php
 namespace App\Libs;
 
-require_once( __DIR__ . '/vendor/autoload.php');
+//require_once( __DIR__ . '/vendor/autoload.php');
 
-use Illuminate\Support\Arr;
-use Dotenv\Dotenv;
+//use Illuminate\Support\Arr;
+//use Dotenv\Dotenv;
 use Goutte\Client;
 
 class ReserveBike
@@ -13,8 +13,8 @@ class ReserveBike
     function __construct()
     {
         // これは、もとの実行クラスがやるべきかな。
-        $dotenv = Dotenv::create(__DIR__);
-        $dotenv->load();
+//        $dotenv = Dotenv::create(__DIR__);
+//        $dotenv->load();
 
         $this->client  = new client;
         $this->memberId = getenv('MEMBER_ID');
@@ -36,7 +36,6 @@ class ReserveBike
         if ($this->reserved != []) {
             return $this->reserved;
         }
-
         $faildCnt = 0;
         foreach ($ports as $port) {
             // 自転車があるポート以外はスキップ
@@ -95,6 +94,7 @@ class ReserveBike
         if (!$this->sessionId == "") {
             return false;
         }
+        return true;
     }
 
     public function reserveCancel(): bool

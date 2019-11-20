@@ -9,7 +9,7 @@ services:
       - php
     restart: always
     environment:
-      - DOMAINS=lemon.misato-taxi.jp -> http://php
+      - DOMAINS=lemon.takuru.net -> http://php
       - STAGE
 
   php:

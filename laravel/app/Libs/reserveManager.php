@@ -1,16 +1,15 @@
 <?php
-
 namespace App\Libs;
 
-require_once(__DIR__ . '/vendor/autoload.php');
+//require_once(__DIR__ . '/vendor/autoload.php');
 require_once(__DIR__ . '/getPortsFromGeo.php');
 require_once(__DIR__ . '/getPorts.php');
 require_once(__DIR__ . '/reserveBike.php');
 
-use Dotenv\Dotenv;
+//use Dotenv\Dotenv;
 
 
-class reserveManager
+class ReserveManager
 {
 
     private $ports;
@@ -20,10 +19,8 @@ class reserveManager
 
     function __construct()
     {
-        $dotenv = Dotenv::create(__DIR__);
-        $dotenv->load();
-        $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(getenv('LINE_CHANNEL_ACCESS_TOKEN'));
-        $this->bot = new \LINE\LINEBot($httpClient, ['channelSecret' => getenv('LINE_CHANNEL_SECRET')]);
+        $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(env('LINE_CHANNEL_ACCESS_TOKEN'));
+        $this->bot = new \LINE\LINEBot($httpClient, ['channelSecret' => env('LINE_CHANNEL_SECRET')]);
     }
 
     public function lineReceiver($event)
@@ -67,7 +64,7 @@ class reserveManager
             file_put_contents('php://stdout', print_r($this->reserveBike,true));
 
             // Line送信
-            $this->pushMessage(getenv('LINE_USER_ID'),$this->buildMessage());
+            $this->pushMessage(env('LINE_USER_ID'),$this->buildMessage());
     }
 
     private function buildMessage() :string
