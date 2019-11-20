@@ -1,13 +1,9 @@
 <?php
 namespace App\Libs;
 
-//require_once(__DIR__ . '/vendor/autoload.php');
 require_once(__DIR__ . '/getPortsFromGeo.php');
 require_once(__DIR__ . '/getPorts.php');
 require_once(__DIR__ . '/reserveBike.php');
-
-//use Dotenv\Dotenv;
-
 
 class ReserveManager
 {

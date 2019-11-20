@@ -1,15 +1,11 @@
 <?php
-
 namespace App\Libs;
-
-//require_once( __DIR__ . '/vendor/autoload.php');
 
 use Goutte\Client;
 
 class GetPorts
 {
     private $stockCheckUrl = 'https://tcc.docomo-cycle.jp/cgi-bin/csapi/csapiV1';
-
 
     private function createPostXml($portId) :string
     {

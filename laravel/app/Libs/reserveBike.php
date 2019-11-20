@@ -1,21 +1,12 @@
 <?php
 namespace App\Libs;
 
-//require_once( __DIR__ . '/vendor/autoload.php');
-
-//use Illuminate\Support\Arr;
-//use Dotenv\Dotenv;
 use Goutte\Client;
 
 class ReserveBike
 {
-
     function __construct()
     {
-        // これは、もとの実行クラスがやるべきかな。
-//        $dotenv = Dotenv::create(__DIR__);
-//        $dotenv->load();
-
         $this->client  = new client;
         $this->memberId = getenv('MEMBER_ID');
         $this->password = getenv('PASSWORD');
