@@ -41,6 +41,9 @@ class ReserveManager
             if((new ReserveBike)->reserveCancel()){
                 $this->replyMessage($event['replyToken'],"自転車の予約をキャンセルしました");
             }
+        }elseif(preg_match('/akiba/', $event['message']['text'])){
+                // TODO LibからController呼び出すのはご法度な気がするので後で直す
+                app('App\Http\Controllers\ReserveController')->index();
         }else{
                 $this->replyMessage($event['replyToken'],"位置情報をくれれば自転車予約するよ。cancel したい場合は、cancel と入力してね。");
         }
