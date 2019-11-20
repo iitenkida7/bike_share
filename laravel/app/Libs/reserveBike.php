@@ -8,8 +8,8 @@ class ReserveBike
     function __construct()
     {
         $this->client  = new client;
-        $this->memberId = getenv('MEMBER_ID');
-        $this->password = getenv('PASSWORD');
+        $this->memberId = env('MEMBER_ID');
+        $this->password = env('PASSWORD');
 
         self::getLoginSession();
     }
