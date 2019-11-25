@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Libs\reserveManager;
 
 class LineController extends Controller
@@ -11,7 +12,7 @@ class LineController extends Controller
     {
         $requestHeaders = getallheaders();
         $requestBody = file_get_contents('php://input');
-        file_put_contents('php://stdout', $requestBody);
+        Log::debug($requestBody);
         $event = json_decode($requestBody, true)['events'][0];
 
         // リクエスト検証

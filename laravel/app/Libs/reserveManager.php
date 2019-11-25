@@ -1,6 +1,9 @@
 <?php
 namespace App\Libs;
 
+use Illuminate\Support\Facades\Log;
+
+
 class ReserveManager
 {
     private $ports;
@@ -24,11 +27,11 @@ class ReserveManager
             $requestPorts[$port['code']] =  $port['name'];
         }
         $this->status = (new GetPorts)->status($requestPorts);
-        file_put_contents('php://stdout', print_r($this->status,true));
+        Log::debug(print_r($this->status,true));
 
         // 予約処理
         $this->reserveBike = (new ReserveBike)->reserveNearbyBike($this->status);
-        file_put_contents('php://stdout', print_r($this->reserveBike,true));
+        Log::debug(print_r($this->reserveBike,true));
 
         // Line送信  
         $this->replyMessage($event['replyToken'],$this->buildMessage());
@@ -55,7 +58,7 @@ class ReserveManager
 
             // 予約処理
             $this->reserveBike = (new ReserveBike)->reserveNearbyBike($this->status);
-            file_put_contents('php://stdout', print_r($this->reserveBike,true));
+            Log::debug(print_r($this->reserveBike,true));
 
             // Line送信
             $this->pushMessage(env('LINE_USER_ID'),$this->buildMessage());
@@ -82,7 +85,7 @@ class ReserveManager
     {
         $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($msg);
         $response = $this->bot->replyMessage($replyToken, $textMessageBuilder);
-        file_put_contents('php://stdout', $response->getHTTPStatus() . ' ' . $response->getRawBody());
+        Log::debug($response->getHTTPStatus() . ' ' . $response->getRawBody());
         if ($response->getHTTPStatus() == 200){
             return true;
         }
@@ -93,7 +96,7 @@ class ReserveManager
     {
         $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($msg);
         $response = $this->bot->pushMessage($lineUserId, $textMessageBuilder);
-        file_put_contents('php://stdout', $response->getHTTPStatus() . ' ' . $response->getRawBody());
+        Log::debug($response->getHTTPStatus() . ' ' . $response->getRawBody());
         if ($response->getHTTPStatus() == 200){
             return true;
         }
@@ -103,7 +106,7 @@ class ReserveManager
     {
         $locationMessageBuilder = new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder($port['name'], $port['name'], $port['lat'], $port['lng']);
         $response = $this->bot->pushMessage($userId,  $locationMessageBuilder);
-        file_put_contents('php://stdout', $response->getHTTPStatus() . ' ' . $response->getRawBody());
+        Log::debug($response->getHTTPStatus() . ' ' . $response->getRawBody());
         if ($response->getHTTPStatus() == 200){
             return true;
         }
