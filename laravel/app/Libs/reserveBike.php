@@ -49,6 +49,7 @@ class ReserveBike
                     return [ 'reserve' => false , 'bikeInfo' => null ];
                 }
                 if ($this->reserveBike($portBike)) {
+                    BikeStatus::create([ 'line_id' => $this->memberId, 'port_name' => $port['portName'], 'bike_id' => $portBike['BikeName']]);
                     return [
                         'reserve' => true,
                         'bikeInfo' => [
