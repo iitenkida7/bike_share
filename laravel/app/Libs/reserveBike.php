@@ -64,6 +64,7 @@ class ReserveBike
             }
             return [ 'reserve' => false , 'bikeInfo' => null ];
         }
+        return [];
     }
 
     private function getLoginSession() :bool
