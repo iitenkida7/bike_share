@@ -2,14 +2,16 @@
 namespace App\Libs;
 
 use Goutte\Client;
+use App\BikeStatus;
+use Illuminate\Support\Facades\Config;
 
 class ReserveBike
 {
     function __construct()
     {
         $this->client  = new client;
-        $this->memberId = env('MEMBER_ID');
-        $this->password = env('PASSWORD');
+        $this->memberId = Config::get('bike_share.chiyokuru.memberId');
+        $this->password = Config::get('bike_share.chiyokuru.password');
 
         self::getLoginSession();
     }

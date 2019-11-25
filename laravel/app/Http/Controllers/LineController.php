@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 use App\Libs\reserveManager;
 
 class LineController extends Controller
@@ -14,10 +15,9 @@ class LineController extends Controller
         $requestBody = file_get_contents('php://input');
         Log::debug($requestBody);
         $event = json_decode($requestBody, true)['events'][0];
-
+  
         // リクエスト検証
-        $lineChannelSecret = env('LINE_CHANNEL_SECRET');
-        $signature =  base64_encode(hash_hmac('sha256', $requestBody, $lineChannelSecret, true));
+        $signature =  base64_encode(hash_hmac('sha256', $requestBody, Config::get('bike_share.line.channelSecret'), true));
         if($signature !== $requestHeaders['X-Line-Signature']){
             header( "HTTP/1.1 404 Not Found" ) ;
             exit;

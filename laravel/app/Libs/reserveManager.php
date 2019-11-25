@@ -2,7 +2,7 @@
 namespace App\Libs;
 
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Facades\Config;
 
 class ReserveManager
 {
@@ -13,8 +13,8 @@ class ReserveManager
 
     function __construct()
     {
-        $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(env('LINE_CHANNEL_ACCESS_TOKEN'));
-        $this->bot = new \LINE\LINEBot($httpClient, ['channelSecret' => env('LINE_CHANNEL_SECRET')]);
+        $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(Config::get('bike_share.line.channelAccessToken'));
+        $this->bot = new \LINE\LINEBot($httpClient, ['channelSecret' => Config::get('bike_share.line.channelSecret')]);
     }
 
     public function lineReceiver($event)
@@ -61,7 +61,7 @@ class ReserveManager
             Log::debug(print_r($this->reserveBike,true));
 
             // Line送信
-            $this->pushMessage(env('LINE_USER_ID'),$this->buildMessage());
+            $this->pushMessage(Config::get('bike_share.line.userId'),$this->buildMessage());
     }
 
     private function buildMessage() :string
