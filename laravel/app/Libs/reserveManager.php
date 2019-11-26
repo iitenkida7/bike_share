@@ -3,19 +3,13 @@ namespace App\Libs;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use App\Libs\lineMessage;
 
 class ReserveManager
 {
     private $ports;
     private $status;
     private $reserveBike;
-    private $bot; //botインスタンス
-
-    function __construct()
-    {
-        $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(Config::get('bike_share.line.channelAccessToken'));
-        $this->bot = new \LINE\LINEBot($httpClient, ['channelSecret' => Config::get('bike_share.line.channelSecret')]);
-    }
 
     public function lineReceiver($event)
     {
@@ -34,21 +28,21 @@ class ReserveManager
         Log::debug(print_r($this->reserveBike,true));
 
         // Line送信  
-        $this->replyMessage($event['replyToken'],$this->buildMessage());
-        $this->pushLocation($event['source']['userId'],$this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']));
+        (new LineMessage())->setReplayToken($event['replyToken'])->buildMessage($this->message())->postMessage();
+        (new LineMessage())->setUserId($event['source']['userId'])->buildLocation($this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']));
     }
 
     public function lineMessageDispatcher($event)
     {
         if(preg_match('/cancel/', $event['message']['text'])){
             if((new ReserveBike)->reserveCancel()){
-                $this->replyMessage($event['replyToken'],"自転車の予約をキャンセルしました");
+                (new LineMessage())->setReplayToken($event['replyToken'])->buildMessage("自転車の予約をキャンセルしました")->postMessage();
             }
         }elseif(preg_match('/akiba/', $event['message']['text'])){
                 // TODO LibからController呼び出すのはご法度な気がするので後で直す
                 app('App\Http\Controllers\ReserveController')->index();
         }else{
-                $this->replyMessage($event['replyToken'],"位置情報をくれれば自転車予約するよ。cancel したい場合は、cancel と入力してね。");
+                (new LineMessage())->setReplayToken($event['replyToken'])->buildMessage("位置情報をくれれば自転車予約するよ。cancel したい場合は、cancel と入力してね。")->postMessage();
         }
     }
 
@@ -61,10 +55,11 @@ class ReserveManager
             Log::debug(print_r($this->reserveBike,true));
 
             // Line送信
-            $this->pushMessage(Config::get('bike_share.line.userId'),$this->buildMessage());
+            // TODO UserID が固定になっているので、複数ユーザー対応のときに治す。
+            (new LineMessage())->setUserId(Config::get('bike_share.line.userId'))->buildMessage($this->message())->postMessage();
     }
 
-    private function buildMessage() :string
+    private function message() :string
     {
         $msg="";
         foreach ($this->status as $item) {
@@ -79,38 +74,6 @@ class ReserveManager
     {
         $this->ports = (new getPortsFromGeo)->setPoint($lat,$lng)->getPorts();
         return $this->ports;
-    }
-
-    private function replyMessage($replyToken,$msg) :bool
-    {
-        $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($msg);
-        $response = $this->bot->replyMessage($replyToken, $textMessageBuilder);
-        Log::debug($response->getHTTPStatus() . ' ' . $response->getRawBody());
-        if ($response->getHTTPStatus() == 200){
-            return true;
-        }
-        return false;
-    }
-
-    private function pushMessage($lineUserId,$msg) :bool
-    {
-        $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($msg);
-        $response = $this->bot->pushMessage($lineUserId, $textMessageBuilder);
-        Log::debug($response->getHTTPStatus() . ' ' . $response->getRawBody());
-        if ($response->getHTTPStatus() == 200){
-            return true;
-        }
-        return false;
-    }
-    private function pushLocation($userId,$port) :bool
-    {
-        $locationMessageBuilder = new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder($port['name'], $port['name'], $port['lat'], $port['lng']);
-        $response = $this->bot->pushMessage($userId,  $locationMessageBuilder);
-        Log::debug($response->getHTTPStatus() . ' ' . $response->getRawBody());
-        if ($response->getHTTPStatus() == 200){
-            return true;
-        }
-        return false;
     }
 
     private function searchPortByCode($code) :array
