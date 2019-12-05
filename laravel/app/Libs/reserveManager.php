@@ -14,8 +14,7 @@ class ReserveManager
     public function lineReceiver($event)
     {
         $this->setPortsFromGeo($event['message']['latitude'],$event['message']['longitude']);
-        print_r($this->ports);
-
+ 
         // ポートのステータス確認を行う
         foreach ($this->ports as $port){
             $requestPorts[$port['code']] =  $port['name'];
