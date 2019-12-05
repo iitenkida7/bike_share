@@ -28,7 +28,7 @@ class ReserveManager
 
         // Line送信  
         (new LineMessage())->setReplayToken($event['replyToken'])->buildMessage($this->message())->postMessage();
-        (new LineMessage())->setUserId($event['source']['userId'])->buildLocation($this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']));
+        (new LineMessage())->setUserId($event['source']['userId'])->buildLocation($this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']))->postMessage();;
     }
 
     public function lineMessageDispatcher($event)
