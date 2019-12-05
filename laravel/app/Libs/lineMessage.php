@@ -40,9 +40,9 @@ class LineMessage
         return $this;
     }
 
-    public function buildLocation($port): object
+    public function buildLocation($title, $lat, $lng): object
     {
-        $this->builtMsg = new MessageBuilder\LocationMessageBuilder($port['name'], $port['name'], $port['lat'], $port['lng']);
+        $this->builtMsg = new MessageBuilder\LocationMessageBuilder($title, $title, $lat, $lng);
         return $this;
     }
 

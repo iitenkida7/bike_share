@@ -26,9 +26,12 @@ class ReserveManager
         $this->reserveBike = (new ReserveBike)->reserveNearbyBike($this->status);
         Log::debug(print_r($this->reserveBike,true));
 
+        // 予約できたポート情報の詳細を引き出す。（このあと座標を利用する）
+        $portInfo = $this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']);
+
         // Line送信  
         (new LineMessage())->setReplayToken($event['replyToken'])->buildMessage($this->message())->postMessage();
-        (new LineMessage())->setUserId($event['source']['userId'])->buildLocation($this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']))->postMessage();;
+        (new LineMessage())->setUserId($event['source']['userId'])->buildLocation($portInfo['name'], $portInfo['lat'], $portInfo['lng'])->postMessage();;
     }
 
     public function lineMessageDispatcher($event)
