@@ -15,9 +15,9 @@ class CreateLineUsers extends Migration
     {
         Schema::create('line_users', function (Blueprint $table) {
             $table->bigIncrements('id')->unique();
-            $table->bigIncrements('line_id')->unique();
-            $table->bigIncrements('chiyokuru_id');
-            $table->bigIncrements('chiyokuru_password');
+            $table->string('line_id')->unique();
+            $table->string('chiyokuru_id');
+            $table->string('chiyokuru_password');
             $table->timestamps();
         });
     }
