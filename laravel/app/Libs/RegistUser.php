@@ -42,12 +42,9 @@ class RegistUser
                         'chiyokuru_id' => encrypt($chiyokuruId),
                         'chiyokuru_password' => encrypt($chiyokuruId)]);
                 return (new LineMessage())->setUserId( $event['source']['userId'])->buildMessage("登録成功＼(^o^)／")->post();
-            }else{
-                return (new LineMessage())->setReplayToken($event['replyToken'])->buildMessage("ちよくるの ID/PASS の登録をお願いします。\n１行目ID\n２行目PASS")->post();
             }
-        }            
-          LineUser::insert(['line_id' => $event['source']['userId']]);
-          return (new LineMessage())->setReplayToken($event['replyToken'])->buildMessage("ちよくるの ID/PASS の登録をお願いします。\n１行目ID\n２行目PASS")->post();
+        }
+        return (new LineMessage())->setReplayToken($event['replyToken'])->buildMessage("ちよくるの ID/PASS の登録をお願いします。\n１行目ID\n２行目PASS")->post();
     }
 
     public function getChiyokuruUser($lineId): array
