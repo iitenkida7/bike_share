@@ -26,8 +26,6 @@ class LineController extends Controller
         foreach (json_decode($requestBody, true)['events'] as $event){
 
             if((new RegistUser)->isUser($event['source']['userId'])){
-            //if(true){
-
                 Log::debug("DB登録あり");
                 // Lineからのリクエストにmessage が含まれるか
                 if(empty($event['message']['type'])){
