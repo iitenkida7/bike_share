@@ -16,10 +16,11 @@ class ReserveBike
 
     private $client;
     private $endpoint  = 'https://tcc.docomo-cycle.jp/cycle/TYO/cs_web_main.php';
-    private $sessionId = "";
-    private $memberId  = "";
-    private $password  = "";
+    private $sessionId = '';
+    private $memberId  = '';
+    private $password  = '';
     private $reserved  = [];
+    public $isLogin    = false;
 
     public function reserveNearbyBike($ports) :array
     {
@@ -102,9 +103,10 @@ class ReserveBike
                 'msg' => 'you havbe already reserved' ];
         }
         $this->sessionId = current($login->filter('form > input[name="SessionID"]')->first()->extract('value'));
-        if (!$this->sessionId == "") {
+        if ($this->sessionId == "") {
             return false;
         }
+        $this->isLogin = true;
         return true;
     }
 
