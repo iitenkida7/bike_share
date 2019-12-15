@@ -19,8 +19,8 @@ class ReserveManager
         $this->event = $event;
 
         $ret = (new RegistUser)->getChiyokuruUser($this->event['source']['userId']);
-        $this->chiyokuruId =  $ret->chiyokuru_id;
-        $this->chiyokuruPassword = $ret->chiyokuru_password;
+        $this->chiyokuruId =  $ret['chiyokuruId'];
+        $this->chiyokuruPassword = $ret['chiyokuruPassword'];
     }
 
     public function lineReceiver()
