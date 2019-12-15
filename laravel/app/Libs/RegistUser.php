@@ -33,14 +33,14 @@ class RegistUser
     public function registAnnounce($event): bool
     {
         //LineIDはしているけど、ちよくるパスワード知らないとき。
-        if($this->isTemporary($event['source']['userId'])){
-            $ret = explode("\n", $event['message']['text']);
+        if(! $this->isUser($event['source']['userId'])){
+            list($chiyokuruId, $chiyokuruPassword) = array_pad(explode("\n", $event['message']['text']), 2, null);
             
-            if(new ReserveBike($ret[0],$ret[1])){
-                LineUser::where('line_id',  $event['source']['userId'])
-                    ->update([
-                        'chiyokuru_id' => encrypt($ret[0]),
-                        'chiyokuru_password' => encrypt($ret[1])]);
+            if((new ReserveBike($chiyokuruId, $chiyokuruPassword))->isLogin){
+                LineUser::insert([
+                        'line_id' => $event['source']['userId'],
+                        'chiyokuru_id' => encrypt($chiyokuruId),
+                        'chiyokuru_password' => encrypt($chiyokuruId)]);
                 return (new LineMessage())->setUserId( $event['source']['userId'])->buildMessage("登録成功＼(^o^)／")->post();
             }else{
                 return (new LineMessage())->setReplayToken($event['replyToken'])->buildMessage("ちよくるの ID/PASS の登録をお願いします。\n１行目ID\n２行目PASS")->post();
