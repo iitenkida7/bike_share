@@ -70,11 +70,18 @@ class ReserveManager
     private function message() :string
     {
         $msg="";
+        $msg .= "==利用可能自転車状況==\n";
         foreach ($this->status as $item) {
-            $msg .= "\n[{$item['stockNum']}]{$item['portName']}";
+            $msg .= "[{$item['stockNum']}台]{$item['portName']}\n";
         }
         $msg .= "\n";
-        $msg .= print_r($this->reserveBike, true);
+        $msg .= "==予約ステータス==\n";
+
+        $reserveBike = $this->reserveBike;
+
+        $msg .= "ポート名:" . $reserveBike['bikeInfo']['portName'] . "\n" ;
+        $msg .= "自転車名:" . $reserveBike['bikeInfo']['BikeName'] . "\n" ;
+        $msg .= "パスコード:" . $reserveBike['bikeInfo']['PassCode'] . "\n" ;
         return $msg;
     }
 

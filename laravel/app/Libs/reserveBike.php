@@ -54,6 +54,7 @@ class ReserveBike
                             'portCode' => $port['portId'],
                             'portName' => $port['portName'],
                             'BikeName' => $portBike['BikeName'],
+                            'PassCode' => $this->getBIkePassCode(),
                         ]
                     ];
                 } else {
@@ -65,6 +66,23 @@ class ReserveBike
         return [];
     }
 
+
+    private function getBIkePassCode(): string
+    {
+        $login = $this->client->request('POST', $this->endpoint, [
+            'EventNo'  => 21401, // ログイン後ページ
+            'MemberID' => $this->memberId,
+            'Password' => $this->password,
+        ]);
+
+        usleep(500000); // ちょっと待たないとうまく進めなかった
+        if ($login->filter('.mpt_inner_left p')->count() > 0) {
+              return explode(':', explode("\n", $login->filter('.usr_stat')->text())[2])[1];
+        }
+        return false;
+
+    }
+
     private function getLoginSession() :bool
     {
         $login = $this->client->request('POST', $this->endpoint, [
@@ -72,7 +90,7 @@ class ReserveBike
             'MemberID' => $this->memberId,
             'Password' => $this->password,
         ]);
-        usleep(500000); // ちょっと待たないとうまく進めなかった
+      //  usleep(500000); // ちょっと待たないとうまく進めなかった
 
         if ($login->filter('.mpt_inner_left p')->count() > 0) {
             $this->reserved =  [ 'reserve' => true,
