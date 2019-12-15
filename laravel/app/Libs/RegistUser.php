@@ -21,14 +21,6 @@ class RegistUser
                 ->exists();
     }
 
-    private function isTemporary($lineId): bool
-    {
-        return LineUser::where('line_id', $lineId)
-        ->whereNull('chiyokuru_id')
-        ->whereNull('chiyokuru_password')
-        ->exists();
-    }
-
     // パスワードのパースさせるのは、責務が大きいと思うよ。
     public function registAnnounce($event): bool
     {
