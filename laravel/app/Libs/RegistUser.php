@@ -47,7 +47,7 @@ class RegistUser
             }
         }            
           LineUser::insert(['line_id' => $event['source']['userId']]);
-          return (new LineMessage())->setReplayToken($event['replyToken'])->buildMessage("ちよくるの ID/PASS の登録をお願いします。\n１行目ID\n２行目PASS")->postMessage();
+          return (new LineMessage())->setReplayToken($event['replyToken'])->buildMessage("ちよくるの ID/PASS の登録をお願いします。\n１行目ID\n２行目PASS")->post();
     }
 
     public function getChiyokuruUser($lineId): object
