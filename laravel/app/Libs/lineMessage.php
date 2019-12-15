@@ -46,7 +46,7 @@ class LineMessage
         return $this;
     }
 
-    public function postMessage(): bool
+    public function post(): bool
     {
         if (!empty($this->replayToken)) {
             $response = $this->bot->replyMessage($this->replayToken, $this->builtMsg);
