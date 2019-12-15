@@ -37,12 +37,12 @@ class LineController extends Controller
 
                 // メッセージタイプは位置情か
                 if ( $event['message']['type'] == 'location'){
-                    (new reserveManager())->lineReceiver($event);
+                    (new reserveManager($event))->lineReceiver();
                 }
 
                 // メッセージタイプはtextか
                 if ( $event['message']['type'] == 'text'){
-                    (new reserveManager())->lineMessageDispatcher($event);
+                    (new reserveManager($event))->lineMessageDispatcher();
                 }
 
             }else{
