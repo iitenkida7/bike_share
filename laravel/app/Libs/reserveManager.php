@@ -2,14 +2,16 @@
 namespace App\Libs;
 
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Config;
 use App\Libs\lineMessage;
+use App\Libs\RegistUser;
 
 class ReserveManager
 {
     private $ports;
     private $status;
     private $reserveBike;
+    private $chiyokuruId;
+    private $chiyokuruPassword;
 
     public function lineReceiver($event)
     {
@@ -23,7 +25,7 @@ class ReserveManager
         Log::debug(print_r($this->status,true));
 
         // 予約処理
-        $this->reserveBike = (new ReserveBike)->reserveNearbyBike($this->status);
+        $this->reserveBike = (new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveNearbyBike($this->status);
         Log::debug(print_r($this->reserveBike,true));
 
         // 予約できたポート情報の詳細を引き出す。（このあと座標を利用する）
@@ -36,29 +38,28 @@ class ReserveManager
 
     public function lineMessageDispatcher($event)
     {
+
+        $ret = (new RegistUser)->getChiyokuruUser($event['source']['userId']);
+        $this->chiyokuruId =  $ret->chiyokuru_id;
+        $this->chiyokuruPassword = $ret->chiyokuru_password;
+    
         if(preg_match('/cancel/', $event['message']['text'])){
-            if((new ReserveBike)->reserveCancel()){
+            if((new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveCancel()){
                 (new LineMessage())->setReplayToken($event['replyToken'])->buildMessage("自転車の予約をキャンセルしました")->postMessage();
             }
         }elseif(preg_match('/akiba/', $event['message']['text'])){
-                // TODO LibからController呼び出すのはご法度な気がするので後で直す
-                app('App\Http\Controllers\ReserveController')->index();
+                $this->specifiedReserve($this->akibaPorts());
+                (new LineMessage())->setReplayToken($event['replyToken'])->buildMessage($this->message())->postMessage();
         }else{
                 (new LineMessage())->setReplayToken($event['replyToken'])->buildMessage("位置情報をくれれば自転車予約するよ。cancel したい場合は、cancel と入力してね。")->postMessage();
         }
     }
 
-    public function specifiedReserve($ports)
+    private function specifiedReserve($ports)
     {
             $this->status = (new GetPorts)->status($ports);
-
-            // 予約処理
-            $this->reserveBike = (new ReserveBike)->reserveNearbyBike($this->status);
+            $this->reserveBike = (new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveNearbyBike($this->status);
             Log::debug(print_r($this->reserveBike,true));
-
-            // Line送信
-            // TODO UserID が固定になっているので、複数ユーザー対応のときに治す。
-            (new LineMessage())->setUserId(Config::get('bike_share.line.userId'))->buildMessage($this->message())->postMessage();
     }
 
     private function message() :string
@@ -86,5 +87,16 @@ class ReserveManager
             }  
         }
         return [];
+    }
+
+    private function akibaPorts(): array
+    {
+        return [ 
+              '00010302' => 'ヨドバシカメラ前',
+              '00010303' => '電気街口（西側交通広場）',
+              '00010032' => 'UDX駐輪場前',
+              '00010037' => '富士ソフト',
+              '00010016' => '秋葉原公園',
+        ];
     }
 }

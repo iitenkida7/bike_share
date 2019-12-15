@@ -18,4 +18,3 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('external/line', 'LineController@index');
-Route::get('external/run',   'ReserveController@index');
