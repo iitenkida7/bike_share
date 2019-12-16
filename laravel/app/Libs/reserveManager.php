@@ -38,7 +38,7 @@ class ReserveManager
         $this->reserveBike = (new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveNearbyBike($this->status);
         Log::debug(print_r($this->reserveBike,true));
 
-        // 予約できたポート情報の詳細を引き出す。（このあと座標を利用する）
+        // おもに座標で利用
         $portInfo = $this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']);
 
         // Line送信  
