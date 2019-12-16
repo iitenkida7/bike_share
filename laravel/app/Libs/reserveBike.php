@@ -94,7 +94,7 @@ class ReserveBike
         if ($login->filter('.mpt_inner_left p')->count() > 0) {
             $this->reserved =  [ 'reserve' => 'already exists',
                 'bikeInfo' => [
-                    'portName' => null, //ポート情報の記載が無いためわからず。。 何かAPI叩く必要がありそう。
+                    'portName' => 'unknown', //ポート情報の記載が無いためわからず。。 何かAPI叩く必要がありそう。
                     'BikeName' => explode(':', explode("\n", $login->filter('.usr_stat')->text())[1])[1],
                     'PassCode' => explode(':', explode("\n", $login->filter('.usr_stat')->text())[2])[1],
                 ] ,
