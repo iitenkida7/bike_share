@@ -32,7 +32,7 @@ class RegistUser
                 LineUser::insert([
                         'line_id' => $event['source']['userId'],
                         'chiyokuru_id' => encrypt($chiyokuruId),
-                        'chiyokuru_password' => encrypt($chiyokuruId)]);
+                        'chiyokuru_password' => encrypt($chiyokuruPassword)]);
                 return (new LineMessage())->setUserId( $event['source']['userId'])->buildMessage("登録成功＼(^o^)／")->post();
             }
         }
