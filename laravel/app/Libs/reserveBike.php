@@ -50,7 +50,7 @@ class ReserveBike
                 if ($this->reserveBike($portBike)) {
                     BikeStatus::create([ 'line_id' => $this->memberId, 'port_name' => $port['portName'], 'bike_id' => $portBike['BikeName']]);
                     return [
-                        'reserve' => true,
+                        'reserve' => 'success',
                         'bikeInfo' => [
                             'portCode' => $port['portId'],
                             'portName' => $port['portName'],
@@ -94,7 +94,7 @@ class ReserveBike
       //  usleep(500000); // ちょっと待たないとうまく進めなかった
 
         if ($login->filter('.mpt_inner_left p')->count() > 0) {
-            $this->reserved =  [ 'reserve' => true,
+            $this->reserved =  [ 'reserve' => 'already exists',
                 'bikeInfo' => [
                     'portName' => null, //ポート情報の記載が無いためわからず。。 何かAPI叩く必要がありそう。
                     'BikeName' => explode(':', explode("\n", $login->filter('.usr_stat')->text())[1])[1],
