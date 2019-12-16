@@ -15,9 +15,12 @@ class CreateBikeStatus extends Migration
     {
         Schema::create('bike_statuses', function (Blueprint $table) {
             $table->bigIncrements('id')->unique();
-            $table->string('line_id');
-            $table->string('port_name');
+            $table->bigInteger('line_user_id');
             $table->string('bike_id');
+            $table->string('bike_passcode');
+            $table->string('port_name');
+            $table->geometry('port_lat');
+            $table->geometry('port_lng');
             $table->timestamps();
         });
     }

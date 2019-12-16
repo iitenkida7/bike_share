@@ -5,6 +5,8 @@ namespace App\Libs;
 use App\LineUser;
 use App\Libs\lineMessage;
 use App\Libs\ReserveBike;
+use Illuminate\Support\Facades\Log;
+
 
 class RegistUser
 {
@@ -43,6 +45,7 @@ class RegistUser
     {
         $ret = LineUser::where('line_id', $lineId)->first();
         return [
+            'id' => $ret->id,
             'chiyokuruId' => decrypt($ret->chiyokuru_id),
             'chiyokuruPassword' =>  decrypt($ret->chiyokuru_password),
         ];
