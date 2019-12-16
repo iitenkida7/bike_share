@@ -4,6 +4,7 @@ namespace App\Libs;
 use Illuminate\Support\Facades\Log;
 use App\Libs\lineMessage;
 use App\Libs\RegistUser;
+use App\BikeStatus;
 
 class ReserveManager
 {
@@ -13,12 +14,14 @@ class ReserveManager
     private $reserveBike;
     private $chiyokuruId;
     private $chiyokuruPassword;
+    private $lineUserId;
 
     public function __construct($event)
     {
         $this->event = $event;
 
         $ret = (new RegistUser)->getChiyokuruUser($this->event['source']['userId']);
+        $this->lineUserId  = $ret['id'];
         $this->chiyokuruId =  $ret['chiyokuruId'];
         $this->chiyokuruPassword = $ret['chiyokuruPassword'];
     }
@@ -40,6 +43,17 @@ class ReserveManager
 
         // おもに座標で利用
         $portInfo = $this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']);
+
+        if($this->reserveBike['reserve'] == 'success'){
+            BikeStatus::create([ 
+                'line_user_id' => $this->lineUserId,
+                'port_name' => $this->reserveBike['bikeInfo']['portName'], 
+                'bike_id' => $this->reserveBike['bikeInfo']['BikeName'],
+                'bike_passcode' =>  $this->reserveBike['bikeInfo']['PassCode'],
+                'port_lat' => $portInfo['lat'],
+                'port_lng' => $portInfo['lng'],
+                ]);
+        }
 
         // Line送信  
         (new LineMessage())->setReplayToken($this->event['replyToken'])->buildMessage($this->message())->post();
