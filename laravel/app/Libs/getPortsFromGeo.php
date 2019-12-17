@@ -1,6 +1,6 @@
 <?php
 namespace App\Libs;
-
+use Illuminate\Support\Facades\Log;
 use Goutte\Client;
 
 // 座標から一番最寄りのステーションを探す
@@ -15,7 +15,7 @@ Class getPortsFromGeo
     }
 
     private $client;
-    private $getPortsUrl = 'https://mixway.ekispert.net/api/custom/ports?';
+    private $getPortsUrl = 'https://mixway.ekispert.net/api/geo/port?';
     private $lat;
     private $lng;
     
@@ -29,10 +29,11 @@ Class getPortsFromGeo
     private function buildQuery(): string
     {
         return http_build_query([
-            'lat' => $this->lat,
-            'lng' => $this->lng,
-            'count' => 10,
-            'ofset' => 10,
+            // request sample
+            // https://mixway.ekispert.net/api/geo/port?geoPoint=35.692235113499905%2C139.76147826452643&limit=100000&language=ja
+            'geoPoint' => $this->lat . ',' . $this->lng,
+            'limit' => 20,
+            'language' => 'ja'
         ]);
     }
 
@@ -41,13 +42,23 @@ Class getPortsFromGeo
         return $this->getPortsUrl . $this->buildQuery();
     }
 
-    public function getPorts():array
+    public function getPorts(): array
     {
         $this->client->setHeader('referer', 'https://mixway.ekispert.net/ports/');
         $this->client->setHeader('x-requested-with', 'XMLHttpRequest');
         $this->client->setHeader('user-agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36');
         $this->client->request('GET', $this->getPortsUrl());
+        
+        return $this->postProcess($this->client->getResponse()->getContent());
+    }
 
-        return json_decode($this->client->getResponse()->getContent(), true)['ports'];
+    private function postProcess($json): array
+    {
+        $filtered = collect(json_decode($json, true)['ResultSet']['Port'])->filter(function ($value) {
+            return $value['Corporation']['code'] == 'DOCOMO' && $value['Availability']['stockNum'] >0;  
+        });
+        
+        return $filtered->all();
+
     }
 }
