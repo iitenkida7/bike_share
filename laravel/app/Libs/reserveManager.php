@@ -28,62 +28,61 @@ class ReserveManager
 
     public function lineReceiver()
     {
-        $this->setPortsFromGeo($this->event['message']['latitude'],$this->event['message']['longitude']);
+        $this->setPortsFromGeo($this->event['message']['latitude'], $this->event['message']['longitude']);
  
         // ポートのステータス確認を行う
-        foreach ($this->ports as $port){
+        foreach ($this->ports as $port) {
             $code = str_replace('DOCOMO.', '', $port['code']);
             $requestPorts[$code] =  $port['Name'];
         }
 
-       // Log::debug(print_r($this->ports,true));
+        // Log::debug(print_r($this->ports,true));
         $this->status = (new GetPorts)->status($requestPorts);
-        Log::debug(print_r($this->status,true));
+        Log::debug(print_r($this->status, true));
 
         // 予約処理
         $this->reserveBike = (new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveNearbyBike($this->status);
-        Log::debug(print_r($this->reserveBike,true));
+        Log::debug(print_r($this->reserveBike, true));
 
         // おもに座標で利用
         $portInfo = $this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']);
 
-        // Line送信  
+        // Line送信
         (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage($this->message());
         (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']);
 
 
-        if($this->reserveBike['reserve'] == 'success'){
-            // BikeStatus::create([ 
+        if ($this->reserveBike['reserve'] == 'success') {
+            // BikeStatus::create([
             //     'line_user_id' => $this->lineUserId,
-            //     'port_name' => $this->reserveBike['bikeInfo']['portName'], 
+            //     'port_name' => $this->reserveBike['bikeInfo']['portName'],
             //     'bike_id' => $this->reserveBike['bikeInfo']['BikeName'],
             //     'bike_passcode' =>  $this->reserveBike['bikeInfo']['PassCode'],
             //     'port_lat' => $portInfo['GeoPoint']['lati_d'],
             //     'port_lng' =>  $portInfo['GeoPoint']['longi_d'],
             //     ]);
         }
-
     }
 
     public function lineMessageDispatcher()
-    {   
-        if(preg_match('/cancel/', $this->event['message']['text'])){
-            if((new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveCancel()){
+    {
+        if (preg_match('/cancel/', $this->event['message']['text'])) {
+            if ((new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveCancel()) {
                 (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage("自転車の予約をキャンセルしました");
             }
-        }elseif(preg_match('/akiba/', $this->event['message']['text'])){
-                $this->specifiedReserve($this->akibaPorts());
-                (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage($this->message());
-        }else{
-                (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage("位置情報をくれれば自転車予約するよ。cancel したい場合は、cancel と入力してね。");
+        } elseif (preg_match('/akiba/', $this->event['message']['text'])) {
+            $this->specifiedReserve($this->akibaPorts());
+            (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage($this->message());
+        } else {
+            (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage("位置情報をくれれば自転車予約するよ。cancel したい場合は、cancel と入力してね。");
         }
     }
 
     private function specifiedReserve($ports)
     {
-            $this->status = (new GetPorts)->status($ports);
-            $this->reserveBike = (new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveNearbyBike($this->status);
-            Log::debug(print_r($this->reserveBike,true));
+        $this->status = (new GetPorts)->status($ports);
+        $this->reserveBike = (new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveNearbyBike($this->status);
+        Log::debug(print_r($this->reserveBike, true));
     }
 
     private function message() :string
@@ -104,25 +103,25 @@ class ReserveManager
         return $msg;
     }
 
-    private function setPortsFromGeo($lat,$lng) :array
+    private function setPortsFromGeo($lat, $lng) :array
     {
-        $this->ports = (new getPortsFromGeo)->setPoint($lat,$lng)->getPorts();
+        $this->ports = (new getPortsFromGeo)->setPoint($lat, $lng)->getPorts();
         return $this->ports;
     }
 
     private function searchPortByCode($code) :array
-    { 
-        foreach ($this->ports as  $port){
+    {
+        foreach ($this->ports as  $port) {
             if (str_replace('DOCOMO.', '', $port['code'])  == $code) {
                 return  $port;
-            }  
+            }
         }
         return [];
     }
 
     private function akibaPorts(): array
     {
-        return [ 
+        return [
               '00010302' => 'ヨドバシカメラ前',
               '00010303' => '電気街口（西側交通広場）',
               '00010032' => 'UDX駐輪場前',

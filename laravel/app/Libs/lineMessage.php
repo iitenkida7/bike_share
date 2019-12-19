@@ -10,8 +10,7 @@ use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 
 class LineMessage
 {
-
-    function __construct()
+    public function __construct()
     {
         $httpClient = new CurlHTTPClient(Config::get('bike_share.line.channelAccessToken'));
         $this->bot = new LINEBot($httpClient, ['channelSecret' => Config::get('bike_share.line.channelSecret')]);
