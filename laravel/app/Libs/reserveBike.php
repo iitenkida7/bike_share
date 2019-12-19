@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Log;
 
 class ReserveBike
 {
-    function __construct($memberId, $password)
+    public function __construct($memberId, $password)
     {
         $this->client  = new client;
         $this->memberId = $memberId;
@@ -77,10 +77,9 @@ class ReserveBike
 
         usleep(300000); // ちょっと待たないとうまく進めなかった
         if ($login->filter('.mpt_inner_left p')->count() > 0) {
-              return explode(':', explode("\n", $login->filter('.usr_stat')->text())[2])[1];
+            return explode(':', explode("\n", $login->filter('.usr_stat')->text())[2])[1];
         }
         return false;
-
     }
 
     private function getLoginSession() :bool
@@ -90,7 +89,7 @@ class ReserveBike
             'MemberID' => $this->memberId,
             'Password' => $this->password,
         ]);
-      //  usleep(500000); // ちょっと待たないとうまく進めなかった
+        //  usleep(500000); // ちょっと待たないとうまく進めなかった
 
         if ($login->filter('.mpt_inner_left p')->count() > 0) {
             $this->reserved =  [ 'reserve' => 'already exists',
@@ -138,7 +137,7 @@ class ReserveBike
             //    'ParkingLat' => '35.691456',
             //    'ParkingLon'=> '139.762228'
         ]);
-        if ( $portInfo->filter('.sp_view form')->count() == 0) {
+        if ($portInfo->filter('.sp_view form')->count() == 0) {
             return [];
         }
         return $portInfo->filter('.sp_view form')->each(function ($element) {

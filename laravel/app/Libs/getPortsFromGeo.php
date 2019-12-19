@@ -1,12 +1,13 @@
 <?php
 namespace App\Libs;
+
 use Illuminate\Support\Facades\Log;
 use Goutte\Client;
 
 // 座標から一番最寄りのステーションを探す
-Class getPortsFromGeo
+class getPortsFromGeo
 {
-    function __construct()
+    public function __construct()
     {
         // Cookie 取得目的のアクセス
         $url =   "https://mixway.ekispert.net/ports/";
@@ -19,7 +20,7 @@ Class getPortsFromGeo
     private $lat;
     private $lng;
     
-    public function setPoint($lat,$lng): self
+    public function setPoint($lat, $lng): self
     {
         $this->lat = $lat;
         $this->lng = $lng;
@@ -56,9 +57,8 @@ Class getPortsFromGeo
     {
         $filtered = collect(json_decode($json, true)['ResultSet']['Port'])
          ->filter(function ($value) {
-            return $value['Corporation']['code'] == 'DOCOMO';
-        });
+             return $value['Corporation']['code'] == 'DOCOMO';
+         });
         return $filtered->all();
-
     }
 }
