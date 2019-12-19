@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Http\Middleware\CheckAge;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,4 +18,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('external/line', 'LineController@index');
+Route::middleware('line')->post('external/line', 'LineController@index');
