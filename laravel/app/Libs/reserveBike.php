@@ -2,6 +2,7 @@
 namespace App\Libs;
 
 use Goutte\Client;
+use Illuminate\Support\Facades\Log;
 
 class ReserveBike
 {
@@ -100,6 +101,7 @@ class ReserveBike
                 ] ,
                 'msg' => 'you havbe already reserved' ];
         }
+        // Log::debug($login->html()); // ログインできるか見るときに。
         $this->sessionId = current($login->filter('form > input[name="SessionID"]')->first()->extract('value'));
         if ($this->sessionId == "") {
             return false;

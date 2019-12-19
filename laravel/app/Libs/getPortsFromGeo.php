@@ -32,7 +32,7 @@ Class getPortsFromGeo
             // request sample
             // https://mixway.ekispert.net/api/geo/port?geoPoint=35.692235113499905%2C139.76147826452643&limit=100000&language=ja
             'geoPoint' => $this->lat . ',' . $this->lng,
-            'limit' => 20,
+            'limit' => 7,
             'language' => 'ja'
         ]);
     }
@@ -54,10 +54,10 @@ Class getPortsFromGeo
 
     private function postProcess($json): array
     {
-        $filtered = collect(json_decode($json, true)['ResultSet']['Port'])->filter(function ($value) {
-            return $value['Corporation']['code'] == 'DOCOMO' && $value['Availability']['stockNum'] >0;  
+        $filtered = collect(json_decode($json, true)['ResultSet']['Port'])
+         ->filter(function ($value) {
+            return $value['Corporation']['code'] == 'DOCOMO';
         });
-        
         return $filtered->all();
 
     }

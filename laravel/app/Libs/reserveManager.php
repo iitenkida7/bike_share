@@ -32,8 +32,11 @@ class ReserveManager
  
         // ポートのステータス確認を行う
         foreach ($this->ports as $port){
-            $requestPorts[$port['code']] =  $port['name'];
+            $code = str_replace('DOCOMO.', '', $port['code']);
+            $requestPorts[$code] =  $port['Name'];
         }
+
+       // Log::debug(print_r($this->ports,true));
         $this->status = (new GetPorts)->status($requestPorts);
         Log::debug(print_r($this->status,true));
 
@@ -44,20 +47,22 @@ class ReserveManager
         // おもに座標で利用
         $portInfo = $this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']);
 
-        if($this->reserveBike['reserve'] == 'success'){
-            BikeStatus::create([ 
-                'line_user_id' => $this->lineUserId,
-                'port_name' => $this->reserveBike['bikeInfo']['portName'], 
-                'bike_id' => $this->reserveBike['bikeInfo']['BikeName'],
-                'bike_passcode' =>  $this->reserveBike['bikeInfo']['PassCode'],
-                'port_lat' => $portInfo['lat'],
-                'port_lng' => $portInfo['lng'],
-                ]);
-        }
-
         // Line送信  
         (new LineMessage())->setReplayToken($this->event['replyToken'])->buildMessage($this->message())->post();
-        (new LineMessage())->setUserId($this->event['source']['userId'])->buildLocation($portInfo['name'], $portInfo['lat'], $portInfo['lng'])->post();;
+        (new LineMessage())->setUserId($this->event['source']['userId'])->buildLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d'])->post();;
+
+
+        if($this->reserveBike['reserve'] == 'success'){
+            // BikeStatus::create([ 
+            //     'line_user_id' => $this->lineUserId,
+            //     'port_name' => $this->reserveBike['bikeInfo']['portName'], 
+            //     'bike_id' => $this->reserveBike['bikeInfo']['BikeName'],
+            //     'bike_passcode' =>  $this->reserveBike['bikeInfo']['PassCode'],
+            //     'port_lat' => $portInfo['GeoPoint']['lati_d'],
+            //     'port_lng' =>  $portInfo['GeoPoint']['longi_d'],
+            //     ]);
+        }
+
     }
 
     public function lineMessageDispatcher()
@@ -108,7 +113,7 @@ class ReserveManager
     private function searchPortByCode($code) :array
     { 
         foreach ($this->ports as  $port){
-            if ($port['code']  == $code) {
+            if (str_replace('DOCOMO.', '', $port['code'])  == $code) {
                 return  $port;
             }  
         }
