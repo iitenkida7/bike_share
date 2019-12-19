@@ -42,7 +42,7 @@ class ReserveBike
 
             // 予約を試みる
             foreach ($portBikes as $portBike) {
-                usleep(500000);
+                usleep(300000);
                 // 3回トライしてだめだったら諦める
                 if ($faildCnt >= 3) {
                     return [ 'reserve' => false , 'bikeInfo' => null ];
@@ -75,7 +75,7 @@ class ReserveBike
             'Password' => $this->password,
         ]);
 
-        usleep(500000); // ちょっと待たないとうまく進めなかった
+        usleep(300000); // ちょっと待たないとうまく進めなかった
         if ($login->filter('.mpt_inner_left p')->count() > 0) {
               return explode(':', explode("\n", $login->filter('.usr_stat')->text())[2])[1];
         }

@@ -31,7 +31,7 @@ class GetPorts
                 'stockNum' => $stockCheck->filter('total_num')->html(),
             ];
 
-            usleep(100000);
+            usleep(30000);
         }
         return $portsStatus;
     }
