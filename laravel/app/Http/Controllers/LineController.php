@@ -13,11 +13,10 @@ class LineController extends Controller
 {
     public function index(Request $request)
     {
-        $requestHeaders = getallheaders();
         Log::debug($request->getContent());
         // リクエスト検証
         $signature =  base64_encode(hash_hmac('sha256', $request->getContent(), Config::get('bike_share.line.channelSecret'), true));
-        if($signature !== $requestHeaders['X-Line-Signature']){
+        if($signature !== $request->header('X-Line-Signature')){
             header( "HTTP/1.1 404 Not Found" ) ;
             exit;
         }
