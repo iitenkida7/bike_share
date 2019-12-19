@@ -34,19 +34,19 @@ class LineMessage
         return $this;
     }
 
-    public function buildMessage($msg): object
+    public function postMessage($msg): bool
     {
         $this->builtMsg = new MessageBuilder\TextMessageBuilder($msg);
-        return $this;
+        return $this->post();
     }
 
-    public function buildLocation($title, $lat, $lng): object
+    public function postLocation($title, $lat, $lng): bool
     {
         $this->builtMsg = new MessageBuilder\LocationMessageBuilder($title, $title, $lat, $lng);
-        return $this;
+        return $this->post();
     }
 
-    public function post(): bool
+    private function post(): bool
     {
         if (!empty($this->replayToken)) {
             $response = $this->bot->replyMessage($this->replayToken, $this->builtMsg);

@@ -48,8 +48,8 @@ class ReserveManager
         $portInfo = $this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']);
 
         // Line送信  
-        (new LineMessage())->setReplayToken($this->event['replyToken'])->buildMessage($this->message())->post();
-        (new LineMessage())->setUserId($this->event['source']['userId'])->buildLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d'])->post();;
+        (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage($this->message());
+        (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']);
 
 
         if($this->reserveBike['reserve'] == 'success'){
@@ -69,13 +69,13 @@ class ReserveManager
     {   
         if(preg_match('/cancel/', $this->event['message']['text'])){
             if((new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveCancel()){
-                (new LineMessage())->setReplayToken($this->event['replyToken'])->buildMessage("自転車の予約をキャンセルしました")->post();
+                (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage("自転車の予約をキャンセルしました");
             }
         }elseif(preg_match('/akiba/', $this->event['message']['text'])){
                 $this->specifiedReserve($this->akibaPorts());
-                (new LineMessage())->setReplayToken($this->event['replyToken'])->buildMessage($this->message())->post();
+                (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage($this->message());
         }else{
-                (new LineMessage())->setReplayToken($this->event['replyToken'])->buildMessage("位置情報をくれれば自転車予約するよ。cancel したい場合は、cancel と入力してね。")->post();
+                (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage("位置情報をくれれば自転車予約するよ。cancel したい場合は、cancel と入力してね。");
         }
     }
 
