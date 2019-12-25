@@ -77,7 +77,8 @@ class ReserveBike
 
         usleep(300000); // ちょっと待たないとうまく進めなかった
         if ($login->filter('.mpt_inner_left p')->count() > 0) {
-            return explode(':', explode("\n", $login->filter('.usr_stat')->text())[2])[1];
+            preg_match("/use:(.*)$/", $login->filter('.usr_stat')->text(), $passCode);
+            return $passCode[1];
         }
         return false;
     }
@@ -92,11 +93,13 @@ class ReserveBike
         //  usleep(500000); // ちょっと待たないとうまく進めなかった
 
         if ($login->filter('.mpt_inner_left p')->count() > 0) {
+            preg_match("/use:(.*)$/", $login->filter('.usr_stat')->text(), $passCode);
+            preg_match("/Reserved:(.*) 開/", $login->filter('.usr_stat')->text(), $bikeName);
             $this->reserved =  [ 'reserve' => 'already exists',
                 'bikeInfo' => [
                     'portName' => 'unknown', //ポート情報の記載が無いためわからず。。 何かAPI叩く必要がありそう。
-                    'BikeName' => explode(':', explode("\n", $login->filter('.usr_stat')->text())[1])[1],
-                    'PassCode' => explode(':', explode("\n", $login->filter('.usr_stat')->text())[2])[1],
+                    'BikeName' => $bikeName[1],
+                    'PassCode' => $passCode[1],
                 ] ,
                 'msg' => 'you havbe already reserved' ];
         }
