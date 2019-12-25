@@ -49,7 +49,7 @@ class ReserveBike
                 }
                 if ($this->reserveBike($portBike)) {
                     return [
-                        'reserve' => 'success',
+                        'reserve' => true,
                         'bikeInfo' => [
                             'portCode' => $port['portId'],
                             'portName' => $port['portName'],
