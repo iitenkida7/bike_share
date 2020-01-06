@@ -2,6 +2,7 @@
 namespace App\Libs;
 
 use Goutte\Client;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
 class ReserveBike
@@ -28,7 +29,7 @@ class ReserveBike
         if ($this->reserved != []) {
             return $this->reserved;
         }
-        $faildCnt = 0;
+
         foreach ($ports as $port) {
             // 自転車があるポート以外はスキップ
             if ($port['stockNum'] <= 0) {
@@ -40,13 +41,11 @@ class ReserveBike
                 continue;
             }
 
-            // 予約を試みる
-            foreach ($portBikes as $portBike) {
+            // 予約を試みる 故障車を連続で引かないようrandomで。
+            $faildCnt = 0;
+            while ($faildCnt <= 3) {
                 usleep(300000);
-                // 3回トライしてだめだったら諦める
-                if ($faildCnt >= 3) {
-                    return [ 'reserve' => false , 'bikeInfo' => null ];
-                }
+                $portBike = Arr::random($portBikes);
                 if ($this->reserveBike($portBike)) {
                     return [
                         'reserve' => true,
@@ -54,20 +53,17 @@ class ReserveBike
                             'portCode' => $port['portId'],
                             'portName' => $port['portName'],
                             'BikeName' => $portBike['BikeName'],
-                            'PassCode' => $this->getBIkePassCode(),
+                            'PassCode' => $this->getBikePassCode(),
                         ]
                     ];
-                } else {
-                    $faildCnt ++ ;
                 }
-            }
-            return [ 'reserve' => false , 'bikeInfo' => null ];
+            }  
         }
-        return [];
+        // 諦める
+        return [ 'reserve' => false , 'bikeInfo' => null ];
     }
 
-
-    private function getBIkePassCode(): string
+    private function getBikePassCode(): string
     {
         $login = $this->client->request('POST', $this->endpoint, [
             'EventNo'  => 21401, // ログイン後ページ
