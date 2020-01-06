@@ -76,28 +76,30 @@ class ReserveManager
                 (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage("自転車の予約をキャンセルしました");
             }
         } elseif (preg_match('/akiba/', $this->event['message']['text'])) {
-            $this->specifiedReserve($this->akibaPorts());
+            $portInfo  = $this->specifiedReserve($this->akibaPoint());
             (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage($this->message());
+            (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']);
+
         } else {
             (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage("位置情報をくれれば自転車予約するよ。cancel したい場合は、cancel と入力してね。");
         }
     }
 
-    private function specifiedReserve($ports)
+    private function specifiedReserve($point)
     {
-        $this->status = (new GetPorts)->status($ports);
-        $this->reserveBike = (new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveNearbyBike($this->status);
+        $this->setPortsFromGeo($point['latitude'], $point['longitude']);
+        $portInfo = $this->reserveProcess();
 
         BikeStatus::create([
             'line_user_id' => $this->lineUserId,
             'port_name' => $this->reserveBike['bikeInfo']['portName'],
             'bike_id' => $this->reserveBike['bikeInfo']['BikeName'],
             'bike_passcode' =>  $this->reserveBike['bikeInfo']['PassCode'],
-            // 座標わからない。。
-            'point' => null, // new Point($portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']),	// (lat, lng)
+            'point' => new Point($portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']),	// (lat, lng)
             ]);
 
         Log::debug(print_r($this->reserveBike, true));
+        return $portInfo;
     }
 
     private function message() :string
@@ -134,14 +136,11 @@ class ReserveManager
         return [];
     }
 
-    private function akibaPorts(): array
+    private function akibaPoint(): array
     {
         return [
-              '00010302' => 'ヨドバシカメラ前',
-              '00010303' => '電気街口（西側交通広場）',
-              '00010032' => 'UDX駐輪場前',
-              '00010037' => '富士ソフト',
-              '00010016' => '秋葉原公園',
+            'latitude' => 35.699135490482355,
+            'longitude' => 139.77446414530277,
         ];
     }
 }
