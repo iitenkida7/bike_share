@@ -31,6 +31,15 @@ class ReserveManager
     {
         $this->setPortsFromGeo($this->event['message']['latitude'], $this->event['message']['longitude']);
  
+        $portInfo = $this->reserveProcess();
+
+        // Line送信
+        (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage($this->message());
+        (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']);
+    }
+
+    private function reserveProcess()
+    {
         // ポートのステータス確認を行う
         foreach ($this->ports as $port) {
             $code = str_replace('DOCOMO.', '', $port['code']);
@@ -45,24 +54,19 @@ class ReserveManager
         $this->reserveBike = (new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveNearbyBike($this->status);
         Log::debug(print_r($this->reserveBike, true));
 
-        // おもに座標で利用
         $portInfo = $this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']);
-
-        // Line送信
-        (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage($this->message());
-        (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']);
-
-
-
         if ($this->reserveBike['reserve'] == 'success') {
-             BikeStatus::create([
-                 'line_user_id' => $this->lineUserId,
-                 'port_name' => $this->reserveBike['bikeInfo']['portName'],
-                 'bike_id' => $this->reserveBike['bikeInfo']['BikeName'],
-                 'bike_passcode' =>  $this->reserveBike['bikeInfo']['PassCode'],
-                 'point' => new Point($portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']),	// (lat, lng)
-                 ]);
-        }
+            BikeStatus::create([
+                'line_user_id' => $this->lineUserId,
+                'port_name' => $this->reserveBike['bikeInfo']['portName'],
+                'bike_id' => $this->reserveBike['bikeInfo']['BikeName'],
+                'bike_passcode' =>  $this->reserveBike['bikeInfo']['PassCode'],
+                'point' => new Point($portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']),	// (lat, lng)
+                ]);
+       }
+
+        // おもに座標で利用
+        return $portInfo;
     }
 
     public function lineMessageDispatcher()
@@ -83,6 +87,16 @@ class ReserveManager
     {
         $this->status = (new GetPorts)->status($ports);
         $this->reserveBike = (new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveNearbyBike($this->status);
+
+        BikeStatus::create([
+            'line_user_id' => $this->lineUserId,
+            'port_name' => $this->reserveBike['bikeInfo']['portName'],
+            'bike_id' => $this->reserveBike['bikeInfo']['BikeName'],
+            'bike_passcode' =>  $this->reserveBike['bikeInfo']['PassCode'],
+            // 座標わからない。。
+            'point' => null, // new Point($portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']),	// (lat, lng)
+            ]);
+
         Log::debug(print_r($this->reserveBike, true));
     }
 
