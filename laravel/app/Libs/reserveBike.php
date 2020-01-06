@@ -54,7 +54,7 @@ class ReserveBike
                             'portCode' => $port['portId'],
                             'portName' => $port['portName'],
                             'BikeName' => $portBike['BikeName'],
-                            'PassCode' => $this->getBIkePassCode(),
+                            'PassCode' => $this->getBikePassCode(),
                         ]
                     ];
                 } else {
@@ -67,7 +67,7 @@ class ReserveBike
     }
 
 
-    private function getBIkePassCode(): string
+    private function getBikePassCode(): string
     {
         $login = $this->client->request('POST', $this->endpoint, [
             'EventNo'  => 21401, // ログイン後ページ
