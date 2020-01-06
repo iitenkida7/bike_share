@@ -93,6 +93,7 @@ class ReserveBike
             preg_match("/Reserved:(.*) 開/", $login->filter('.usr_stat')->text(), $bikeName);
             $this->reserved =  [ 'reserve' => 'already exists',
                 'bikeInfo' => [
+                    'portCode' => 'unknown', //ポート情報の記載が無いためわからず。。 何かAPI叩く必要がありそう。
                     'portName' => 'unknown', //ポート情報の記載が無いためわからず。。 何かAPI叩く必要がありそう。
                     'BikeName' => $bikeName[1],
                     'PassCode' => $passCode[1],
