@@ -38,6 +38,22 @@ class ReserveManager
         (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']);
     }
 
+    public function lineMessageDispatcher()
+    {
+        if (preg_match('/cancel/', $this->event['message']['text'])) {
+            if ((new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveCancel()) {
+                (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage("自転車の予約をキャンセルしました");
+            }
+        } elseif (preg_match('/akiba/', $this->event['message']['text'])) {
+            $portInfo  = $this->specifiedReserve($this->akibaPoint());
+            (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage($this->message());
+            (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']);
+
+        } else {
+            (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage("位置情報をくれれば自転車予約するよ。cancel したい場合は、cancel と入力してね。");
+        }
+    }
+
     private function reserveProcess()
     {
         // ポートのステータス確認を行う
@@ -69,36 +85,10 @@ class ReserveManager
         return $portInfo;
     }
 
-    public function lineMessageDispatcher()
-    {
-        if (preg_match('/cancel/', $this->event['message']['text'])) {
-            if ((new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveCancel()) {
-                (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage("自転車の予約をキャンセルしました");
-            }
-        } elseif (preg_match('/akiba/', $this->event['message']['text'])) {
-            $portInfo  = $this->specifiedReserve($this->akibaPoint());
-            (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage($this->message());
-            (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']);
-
-        } else {
-            (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage("位置情報をくれれば自転車予約するよ。cancel したい場合は、cancel と入力してね。");
-        }
-    }
-
     private function specifiedReserve($point)
     {
         $this->setPortsFromGeo($point['latitude'], $point['longitude']);
         $portInfo = $this->reserveProcess();
-
-        BikeStatus::create([
-            'line_user_id' => $this->lineUserId,
-            'port_name' => $this->reserveBike['bikeInfo']['portName'],
-            'bike_id' => $this->reserveBike['bikeInfo']['BikeName'],
-            'bike_passcode' =>  $this->reserveBike['bikeInfo']['PassCode'],
-            'point' => new Point($portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']),	// (lat, lng)
-            ]);
-
-        Log::debug(print_r($this->reserveBike, true));
         return $portInfo;
     }
 
