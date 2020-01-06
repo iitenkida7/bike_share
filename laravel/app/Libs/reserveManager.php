@@ -2,9 +2,9 @@
 namespace App\Libs;
 
 use Illuminate\Support\Facades\Log;
+use Grimzy\LaravelMysqlSpatial\Types\Point;
 use App\Libs\lineMessage;
 use App\Libs\RegistUser;
-use Grimzy\LaravelMysqlSpatial\Types\Point;
 use App\BikeStatus;
 
 class ReserveManager
