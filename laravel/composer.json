@@ -11,6 +11,7 @@
         "php": "^7.2",
         "fabpot/goutte": "^3.2",
         "fideloper/proxy": "^4.0",
+        "grimzy/laravel-mysql-spatial": "^2.2",
         "laravel/framework": "^6.4",
         "laravel/tinker": "^2.0",
         "linecorp/line-bot-sdk": "^4.1"

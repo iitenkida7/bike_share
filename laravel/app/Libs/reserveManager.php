@@ -4,6 +4,7 @@ namespace App\Libs;
 use Illuminate\Support\Facades\Log;
 use App\Libs\lineMessage;
 use App\Libs\RegistUser;
+use Grimzy\LaravelMysqlSpatial\Types\Point;
 use App\BikeStatus;
 
 class ReserveManager
@@ -52,15 +53,15 @@ class ReserveManager
         (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']);
 
 
+
         if ($this->reserveBike['reserve'] == 'success') {
-            // BikeStatus::create([
-            //     'line_user_id' => $this->lineUserId,
-            //     'port_name' => $this->reserveBike['bikeInfo']['portName'],
-            //     'bike_id' => $this->reserveBike['bikeInfo']['BikeName'],
-            //     'bike_passcode' =>  $this->reserveBike['bikeInfo']['PassCode'],
-            //     'port_lat' => $portInfo['GeoPoint']['lati_d'],
-            //     'port_lng' =>  $portInfo['GeoPoint']['longi_d'],
-            //     ]);
+             BikeStatus::create([
+                 'line_user_id' => $this->lineUserId,
+                 'port_name' => $this->reserveBike['bikeInfo']['portName'],
+                 'bike_id' => $this->reserveBike['bikeInfo']['BikeName'],
+                 'bike_passcode' =>  $this->reserveBike['bikeInfo']['PassCode'],
+                 'point' => new Point($portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']),	// (lat, lng)
+                 ]);
         }
     }
 

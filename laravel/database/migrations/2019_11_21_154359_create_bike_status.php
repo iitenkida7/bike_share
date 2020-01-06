@@ -19,8 +19,7 @@ class CreateBikeStatus extends Migration
             $table->string('bike_id');
             $table->string('bike_passcode');
             $table->string('port_name');
-            $table->geometry('port_lat');
-            $table->geometry('port_lng');
+            $table->geometry('point');
             $table->timestamps();
         });
     }
