@@ -44,7 +44,7 @@ class ReserveBike
             // 予約を試みる 故障車を連続で引かないようrandomで。
             $faildCnt = 0;
             while ($faildCnt <= 3) {
-                usleep(300000);
+                usleep(50000);
                 $portBike = Arr::random($portBikes);
                 if ($this->reserveBike($portBike)) {
                     return [
