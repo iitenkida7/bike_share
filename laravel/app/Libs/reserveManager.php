@@ -35,7 +35,13 @@ class ReserveManager
 
         // Line送信
         (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage($this->message());
-        (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']);
+        
+        if ($this->reserveBike['reserve'] == 'already reserved') {
+            (new LineMessage())->setUserId($this->event['source']['userId'])->postMessage("すでに予約がありました\n返却場所を探す↓↓\nhttps://www.google.com/maps/d/embed?mid=1L2l1EnQJhCNlm_Xxkp9RTjIj68Q");
+            (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation("最寄りのポート",$this->event['message']['latitude'], $this->event['message']['longitude']);
+        }else{
+            (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']);
+        }
     }
 
     public function lineMessageDispatcher()
@@ -47,7 +53,13 @@ class ReserveManager
         } elseif (preg_match('/akiba/', $this->event['message']['text'])) {
             $portInfo  = $this->specifiedReserve($this->akibaPoint());
             (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage($this->message());
-            (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']);
+
+            if($this->reserveBike['reserve'] == 'already reserved'){
+                (new LineMessage())->setUserId($this->event['source']['userId'])->postMessage("すでに予約がありました\n返却場所を探す↓↓\nhttps://www.google.com/maps/d/embed?mid=1L2l1EnQJhCNlm_Xxkp9RTjIj68Q");
+                (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation("最寄りのポート", $this->akibaPoint()['latitude'], $this->akibaPoint()['longitude']);
+            }else{
+                (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']);
+            }
 
         } else {
             (new LineMessage())->setReplayToken($this->event['replyToken'])->postMessage("位置情報をくれれば自転車予約するよ。cancel したい場合は、cancel と入力してね。");
