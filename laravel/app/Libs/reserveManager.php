@@ -71,7 +71,7 @@ class ReserveManager
         Log::debug(print_r($this->reserveBike, true));
 
         $portInfo = $this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']);
-        if ($this->reserveBike['reserve'] == 'success') {
+        if ($this->reserveBike['reserve'] === true ) {
             BikeStatus::create([
                 'line_user_id' => $this->lineUserId,
                 'port_name' => $this->reserveBike['bikeInfo']['portName'],
