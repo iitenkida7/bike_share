@@ -91,7 +91,7 @@ class ReserveBike
         if ($login->filter('.mpt_inner_left p')->count() > 0) {
             preg_match("/use:(.*)$/", $login->filter('.usr_stat')->text(), $passCode);
             preg_match("/Reserved:(.*) 開/", $login->filter('.usr_stat')->text(), $bikeName);
-            $this->reserved =  [ 'reserve' => 'already exists',
+            $this->reserved =  [ 'reserve' => 'already reserved',
                 'bikeInfo' => [
                     'portCode' => 'unknown', //ポート情報の記載が無いためわからず。。 何かAPI叩く必要がありそう。
                     'portName' => 'unknown', //ポート情報の記載が無いためわからず。。 何かAPI叩く必要がありそう。
