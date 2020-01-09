@@ -73,14 +73,11 @@ class ReserveManager
             $code = str_replace('DOCOMO.', '', $port['code']);
             $requestPorts[$code] =  $port['Name'];
         }
-
-        // Log::debug(print_r($this->ports,true));
         $this->status = (new GetPorts)->status($requestPorts);
-        Log::debug(print_r($this->status, true));
 
         // 予約処理
         $this->reserveBike = (new ReserveBike($this->chiyokuruId, $this->chiyokuruPassword))->reserveNearbyBike($this->status);
-        Log::debug(print_r($this->reserveBike, true));
+        Log::debug($this->reserveBike);
 
         $portInfo = $this->searchPortByCode($this->reserveBike['bikeInfo']['portCode']);
         if ($this->reserveBike['reserve'] === true ) {
