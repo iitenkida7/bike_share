@@ -38,7 +38,7 @@ class ReserveManager
         
         if ($this->reserveBike['reserve'] == 'already reserved') {
             (new LineMessage())->setUserId($this->event['source']['userId'])->postMessage("すでに予約がありました\n返却場所を探す↓↓\nhttps://www.google.com/maps/d/embed?mid=1L2l1EnQJhCNlm_Xxkp9RTjIj68Q");
-            (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation("最寄りのポート",$this->event['message']['latitude'], $this->event['message']['longitude']);
+            (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation("【最寄りのポート】" . $this->ports[0]['Name'], $this->ports[0]['GeoPoint']['lati_d'], $this->ports[0]['GeoPoint']['longi_d']);
         }else{
             (new LineMessage())->setUserId($this->event['source']['userId'])->postLocation($portInfo['Name'], $portInfo['GeoPoint']['lati_d'], $portInfo['GeoPoint']['longi_d']);
         }
