@@ -66,7 +66,7 @@ class ReserveManager
         }
     }
 
-    private function reserveProcess()
+    private function reserveProcess() :array
     {
         // ポートのステータス確認を行う
         foreach ($this->ports as $port) {
@@ -94,7 +94,7 @@ class ReserveManager
         return $portInfo;
     }
 
-    private function specifiedReserve($point)
+    private function specifiedReserve($point) :array
     {
         $this->setPortsFromGeo($point['latitude'], $point['longitude']);
         $portInfo = $this->reserveProcess();
